@@ -25,14 +25,8 @@ class PolicyNetwork:
         self.model.add(Dense(output_dim))
         self.model.add(Activation('sigmoid'))
         """
-        self.model.add(CuDNNLSTM(256, input_shape=(1, input_dim),
+        self.model.add(CuDNNLSTM(128, input_shape=(1, input_dim),
                             return_sequences=True, stateful=False))
-        self.model.add(Dropout(dropout_rate))
-        self.model.add(BatchNormalization())
-        self.model.add(CuDNNLSTM(256, return_sequences=True, stateful=False))
-        self.model.add(Dropout(dropout_rate))
-        self.model.add(BatchNormalization())
-        self.model.add(CuDNNLSTM(256, return_sequences=False, stateful=False))
         self.model.add(Dropout(dropout_rate))
         self.model.add(BatchNormalization())
         self.model.add(Dense(output_dim))

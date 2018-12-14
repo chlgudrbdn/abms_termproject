@@ -2,7 +2,7 @@ import logging
 import os
 import settings
 import data_manager_custom as data_manager
-from policy_learner import PolicyLearner
+from policy_learner_custom import PolicyLearner
 
 
 if __name__ == '__main__':

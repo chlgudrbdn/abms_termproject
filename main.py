@@ -9,7 +9,8 @@ init_time = datetime.datetime.now()
 
 if __name__ == '__main__':
     # stock_code = '005930'  # 삼성전자
-    stock_code = '005490'
+    # stock_code = '005490'  # 포스코
+    stock_code = '005490'  # 포스코
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
     timestr = settings.get_time_str()

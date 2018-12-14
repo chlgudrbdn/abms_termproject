@@ -74,10 +74,10 @@ class Agent:
             action = np.random.randint(self.NUM_ACTIONS)  # 무작위로 행동 결정
         else:
             exploration = False
-            probs = policy_network.predict(sample)  # 각 행동에 대한 확률
-            action = np.argmax(probs)
+            probs = policy_network.predict(sample)  # 각 행동에 대한 확률 배열
+            action = np.argmax(probs)  # 가장 큰 값이 있는 index(위치)를 반환.
             confidence = probs[action]
-        return action, confidence, exploration
+        return action, confidence, exploration  # confidence는
 
     def validate_action(self, action):
         validity = True

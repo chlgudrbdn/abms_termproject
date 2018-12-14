@@ -1,11 +1,15 @@
+import logging
+import os
+import settings
+import data_manager
+from policy_learner import PolicyLearner
 import datetime
 
 init_time = datetime.datetime.now()
 
 if __name__ == '__main__':
-    """
     stock_code = '005930'  # 삼성전자
-    # stock_code = 'kospi'
+    # stock_code = '005490'  # 포스코
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
     timestr = settings.get_time_str()
@@ -51,7 +55,7 @@ if __name__ == '__main__':
     policy_learner = PolicyLearner(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
         min_trading_unit=1, max_trading_unit=2, delayed_reward_threshold=.2, lr=.001)
-    policy_learner.fit(balance=10000000, num_epoches=1000,
+    policy_learner.fit(balance=10000000, num_epoches=10,
                        discount_factor=0, start_epsilon=.5)
 
     # 정책 신경망을 파일로 저장
@@ -60,7 +64,6 @@ if __name__ == '__main__':
         os.makedirs(model_dir)
     model_path = os.path.join(model_dir, 'model_%s.h5' % timestr)
     policy_learner.policy_network.save_model(model_path)
-    """
 
 finish_time = datetime.datetime.now()
 print("start   : ", init_time.strftime("%Y-%m-%d-%Hh-%Mm"))
