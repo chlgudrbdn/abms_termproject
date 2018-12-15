@@ -2,6 +2,7 @@ import logging
 import os
 import settings
 import data_manager
+from policy_learner_custom import PolicyLearnerCustom
 from policy_learner import PolicyLearner
 import datetime
 
@@ -10,6 +11,8 @@ init_time = datetime.datetime.now()
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
     # stock_code = '005490'  # 포스코
+    model_ver = '20181207212159'
+
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
     timestr = settings.get_time_str()
@@ -51,10 +54,10 @@ if __name__ == '__main__':
     ]
     training_data = training_data[features_training_data]
 
-    # 강화학습 시작
+    # 강화학습 시작 # 개미.
     policy_learner = PolicyLearner(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=2, delayed_reward_threshold=.2, lr=.001)
+        min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.2, lr=.001)
     policy_learner.fit(balance=10000000, num_epoches=10,
                        discount_factor=0, start_epsilon=.5)
 
@@ -64,6 +67,15 @@ if __name__ == '__main__':
         os.makedirs(model_dir)
     model_path = os.path.join(model_dir, 'model_%s.h5' % timestr)
     policy_learner.policy_network.save_model(model_path)
+
+    # 비 학습 투자 시뮬레이션 시작  # 기관
+    policy_learner = PolicyLearner(
+        stock_code=stock_code, chart_data=chart_data, training_data=training_data,
+        min_trading_unit=1, max_trading_unit=80)
+    policy_learner.trade(balance=1000000000,  # 십억
+                         model_path=os.path.join(
+                             settings.BASE_DIR,
+                             'models/{}/model_{}.h5'.format(stock_code, model_ver)))
 
 finish_time = datetime.datetime.now()
 print("start   : ", init_time.strftime("%Y-%m-%d-%Hh-%Mm"))

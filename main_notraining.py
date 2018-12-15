@@ -7,7 +7,7 @@ from policy_learner import PolicyLearner
 
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
-    model_ver = '20181207212159'
+    model_ver = '20181215142033'
 
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
@@ -28,8 +28,10 @@ if __name__ == '__main__':
     training_data = data_manager.build_training_data(prep_data)
 
     # 기간 필터링
-    training_data = training_data[(training_data['date'] >= '2018-01-01') &
-                                  (training_data['date'] <= '2018-01-31')]
+    training_data = training_data[(training_data['date'] >= '2017-01-01') &
+                                  (training_data['date'] <= '2017-12-31')]
+    # training_data = training_data[(training_data['date'] >= '2018-01-01') &
+    #                               (training_data['date'] <= '2018-01-31')]
     training_data = training_data.dropna()
 
     # 차트 데이터 분리
@@ -51,8 +53,9 @@ if __name__ == '__main__':
     # 비 학습 투자 시뮬레이션 시작
     policy_learner = PolicyLearner(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=3)
-    policy_learner.trade(balance=10000000,
+        min_trading_unit=1, max_trading_unit=2)
+    action_list = policy_learner.trade(balance=10000000,
                          model_path=os.path.join(
                              settings.BASE_DIR,
                              'models/{}/model_{}.h5'.format(stock_code, model_ver)))
+    print(action_list)

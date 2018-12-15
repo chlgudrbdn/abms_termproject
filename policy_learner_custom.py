@@ -4,8 +4,9 @@ import logging  # 학습 과정 정보를 기록하기 위함.
 import numpy as np
 import settings  # 투자 설정, 로깅 설정 위한 모듈. 부록 참조.
 from environment import Environment
-# from agent_custom import Agent
-from agent import Agent
+from agent_custom import Agent
+# from agent import Agent
+from policy_network_shallow import PolicyNetworkShallow
 from policy_network import PolicyNetwork
 from visualizer import Visualizer
 
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 locale.setlocale(locale.LC_ALL, 'ko_KR.UTF-8')
 
 
-class PolicyLearner:
+class PolicyLearnerCustom:
 
     def __init__(self, stock_code, chart_data, training_data=None,
                  min_trading_unit=1, max_trading_unit=2,

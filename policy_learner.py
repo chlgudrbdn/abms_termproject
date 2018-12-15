@@ -96,7 +96,7 @@ class PolicyLearner:
             self.agent.reset()
             self.policy_network.reset()
             self.reset()
-
+            action_list = []
             # 가시화 초기화
             self.visualizer.clear([0, len(self.chart_data)])
 
@@ -122,6 +122,7 @@ class PolicyLearner:
                 # 행동 및 행동에 대한 결과를 기억
                 memory_sample.append(next_sample)
                 memory_action.append(action)
+                action_list.append(action)
                 memory_reward.append(immediate_reward)
                 memory_pv.append(self.agent.portfolio_value)
                 memory_num_stocks.append(self.agent.num_stocks)
@@ -200,6 +201,7 @@ class PolicyLearner:
         # 학습 관련 정보 로그 기록
         logger.info("Max PV: %s, \t # Win: %d" % (
             locale.currency(max_portfolio_value, grouping=True), epoch_win_cnt))
+        return action_list
 
     def _get_batch(self, memory, batch_size, discount_factor, delayed_reward):
         x = np.zeros((batch_size, 1, self.num_features))
@@ -226,4 +228,5 @@ class PolicyLearner:
         if model_path is None:
             return
         self.policy_network.load_model(model_path=model_path)
-        self.fit(balance=balance, num_epoches=1, learning=False)
+        action_list = self.fit(balance=balance, num_epoches=1, learning=False)
+        return action_list
