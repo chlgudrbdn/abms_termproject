@@ -2,14 +2,15 @@ import logging
 import os
 import settings
 import data_manager
-from policy_learner_ant import PolicyLearner
-# from policy_learner_institude import PolicyLearner
+# from policy_learner_ant import PolicyLearner
+from policy_learner_institude import PolicyLearner
+from environment import Environment
 
 
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
-    # model_ver = '20181217015228'  # policy network로 학습
-    model_ver = '20181217031147'  # policy network shallow로 학습
+    model_ver = '20181217033712'  # institude 학습
+    # model_ver = '20181217032705'  # ant 학습
 
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
@@ -51,11 +52,12 @@ if __name__ == '__main__':
         'close_ma120_ratio', 'volume_ma120_ratio'
     ]
     training_data = training_data[features_training_data]
+    environment = Environment(chart_data)  # singletone 환경 객체
 
     # 비 학습 투자 시뮬레이션 시작
     policy_learner = PolicyLearner(
-        # stock_code=stock_code, chart_data=chart_data, training_data=chart_data[features_chart_data[1:]],
-        stock_code=stock_code, chart_data=chart_data, training_data=training_data,
+        # stock_code=stock_code, chart_data=chart_data, training_data=chart_data[features_chart_data[1:]], environment=environment,
+        stock_code=stock_code, chart_data=chart_data, training_data=training_data, environment=environment,
         min_trading_unit=1, max_trading_unit=2)
     policy_learner.trade(balance=10000000,
                          model_path=os.path.join(

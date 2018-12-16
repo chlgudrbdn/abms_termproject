@@ -3,6 +3,7 @@ import os
 import settings
 import data_manager as data_manager
 from policy_learner_ant import PolicyLearner
+from environment import Environment
 
 
 if __name__ == '__main__':
@@ -46,10 +47,11 @@ if __name__ == '__main__':
         'close_ma120_ratio', 'volume_ma120_ratio'
     ]
     training_data = training_data[features_training_data]
+    environment = Environment(chart_data)  # singletone 환경 객체
 
     # 강화학습 시작  # 개미
     policy_learner = PolicyLearner(
-        stock_code=stock_code, chart_data=chart_data, training_data=chart_data[features_chart_data[1:]],
+        stock_code=stock_code, chart_data=chart_data, environment=environment, training_data=chart_data[features_chart_data[1:]],
         min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.02, lr=.0001)
     policy_learner.fit(balance=10000000, num_epoches=100,
                        discount_factor=0, start_epsilon=.3)
