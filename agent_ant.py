@@ -144,7 +144,7 @@ class Agent:
             self.balance += invest_amount  # 보유 현금을 갱신
             self.num_sell += 1  # 매도 횟수 증가
 
-            self.immediate_reward = 1  # 에이전트마다 조금씩 다르게.
+            self.immediate_reward = 2  # 에이전트마다 조금씩 다르게.  # 빨리 매도를 함.
 
         # 홀딩
         elif action == Agent.ACTION_HOLD:
@@ -161,7 +161,7 @@ class Agent:
             # 목표 수익률 달성하여 기준 포트폴리오 가치 갱신
             self.base_portfolio_value = self.portfolio_value
         elif profitloss < -self.delayed_reward_threshold:
-            delayed_reward = -3  # 에이전트마다 조금씩 다르게.
+            delayed_reward = -1  # 에이전트마다 조금씩 다르게.
             # 손실 기준치를 초과하여 기준 포트폴리오 가치 갱신
             self.base_portfolio_value = self.portfolio_value
         else:

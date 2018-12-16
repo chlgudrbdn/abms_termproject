@@ -2,13 +2,14 @@ import logging
 import os
 import settings
 import data_manager
-from policy_learner import PolicyLearner
+from policy_learner_ant import PolicyLearner
+from policy_learner_institude import PolicyLearner
 
 
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
-    model_ver = '20181215142033'  # policy network로 학습
-    # model_ver = '20181215142033'  # policy network shallow로 학습
+    # model_ver = '20181215142033'  # policy network로 학습
+    model_ver = '20181217004644'  # policy network shallow로 학습
 
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
@@ -53,10 +54,10 @@ if __name__ == '__main__':
 
     # 비 학습 투자 시뮬레이션 시작
     policy_learner = PolicyLearner(
+        # stock_code=stock_code, chart_data=chart_data, training_data=chart_data[features_chart_data[1:]],
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
         min_trading_unit=1, max_trading_unit=2)
-    action_list = policy_learner.trade(balance=10000000,
+    policy_learner.trade(balance=10000000,
                          model_path=os.path.join(
                              settings.BASE_DIR,
                              'models/{}/model_{}.h5'.format(stock_code, model_ver)))
-    print(action_list)
