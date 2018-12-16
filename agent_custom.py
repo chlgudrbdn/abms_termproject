@@ -168,10 +168,3 @@ class Agent:
             delayed_reward = 0  # 에이전트마다 조금씩 다르게.
         return self.immediate_reward, delayed_reward
 
-
-class Analyst(Agent):
-    def predict_future_price(self):
-        return None
-
-    def broadcasting(self):
-        return None

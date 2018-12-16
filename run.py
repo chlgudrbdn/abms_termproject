@@ -55,7 +55,7 @@ if __name__ == '__main__':
     training_data = training_data[features_training_data]
 
     # 강화학습 시작 # 개미.
-    policy_learner = PolicyLearner(
+    policy_learner = PolicyLearnerCustom(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
         min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.2, lr=.001)
     policy_learner.fit(balance=10000000, num_epoches=10,
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     policy_learner.policy_network.save_model(model_path)
 
     # 비 학습 투자 시뮬레이션 시작  # 기관
-    policy_learner = PolicyLearner(
+    policy_learner = PolicyLearnerCustom(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
         min_trading_unit=1, max_trading_unit=80)
     policy_learner.trade(balance=1000000000,  # 십억
