@@ -50,8 +50,8 @@ if __name__ == '__main__':
     # 강화학습 시작  # 개미
     policy_learner = PolicyLearner(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=50, delayed_reward_threshold=.02, lr=.001)
-    policy_learner.fit(balance=1000000000, num_epoches=1000,  # 10억
+        min_trading_unit=1, max_trading_unit=50, delayed_reward_threshold=.05, lr=.001)
+    policy_learner.fit(balance=1000000000, num_epoches=1000,  # 100억
                        discount_factor=0, start_epsilon=.5)
 
     # 정책 신경망을 파일로 저장
