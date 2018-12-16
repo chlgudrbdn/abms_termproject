@@ -7,7 +7,8 @@ from policy_learner import PolicyLearner
 
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
-    model_ver = '20181215142033'
+    model_ver = '20181215142033'  # policy network로 학습
+    # model_ver = '20181215142033'  # policy network shallow로 학습
 
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)

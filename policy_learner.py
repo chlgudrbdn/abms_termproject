@@ -6,6 +6,7 @@ import settings  # 투자 설정, 로깅 설정 위한 모듈. 부록 참조.
 from environment import Environment
 from agent import Agent
 from policy_network import PolicyNetwork
+# from policy_network_shallow import PolicyNetworkShallow
 from visualizer import Visualizer
 
 
@@ -32,6 +33,7 @@ class PolicyLearner:
         # 정책 신경망; 입력 크기 = 학습 데이터의 크기 + 에이전트 상태 크기
         self.num_features = self.training_data.shape[1] + self.agent.STATE_DIM
         self.policy_network = PolicyNetwork(
+        # self.policy_network = PolicyNetworkShallow(
             input_dim=self.num_features, output_dim=self.agent.NUM_ACTIONS, lr=lr)
         self.visualizer = Visualizer()  # 가시화 모듈
 
@@ -71,7 +73,7 @@ class PolicyLearner:
         epoch_win_cnt = 0
 
         # 학습 반복
-        for epoch in range(num_epoches):    
+        for epoch in range(num_epoches):
             # 에포크 관련 정보 초기화
             loss = 0.
             itr_cnt = 0
@@ -115,7 +117,6 @@ class PolicyLearner:
                 # 정책 신경망 또는 탐험에 의한 행동 결정
                 action, confidence, exploration = self.agent.decide_action(
                     self.policy_network, self.sample, epsilon)
-
                 # 결정한 행동을 수행하고 즉시 보상과 지연 보상 획득
                 immediate_reward, delayed_reward = self.agent.act(action, confidence)
 
