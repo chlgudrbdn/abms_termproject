@@ -3,13 +3,13 @@ import os
 import settings
 import data_manager
 from policy_learner_ant import PolicyLearner
-from policy_learner_institude import PolicyLearner
+# from policy_learner_institude import PolicyLearner
 
 
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
-    # model_ver = '20181215142033'  # policy network로 학습
-    model_ver = '20181217004644'  # policy network shallow로 학습
+    # model_ver = '20181217015228'  # policy network로 학습
+    model_ver = '20181217031147'  # policy network shallow로 학습
 
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
