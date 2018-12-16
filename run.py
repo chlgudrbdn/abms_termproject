@@ -2,8 +2,10 @@ import logging
 import os
 import settings
 import data_manager
-from policy_learner_custom import PolicyLearnerCustom
-from policy_learner import PolicyLearner
+from policy_learner_ant import PolicyLearner as PolicyLearnerAnt
+from policy_learner_institude import PolicyLearner as PolicyLearnerInstitude
+from multiprocessing import Process, Queue
+from environment import Environment
 import datetime
 
 init_time = datetime.datetime.now()
@@ -54,23 +56,50 @@ if __name__ == '__main__':
     ]
     training_data = training_data[features_training_data]
 
-    # 강화학습 시작 # 개미.
-    policy_learner = PolicyLearnerCustom(
-        stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.2, lr=.001)
-    policy_learner.fit(balance=10000000, num_epoches=10,
-                       discount_factor=0, start_epsilon=.5)
+
+
+
+    q = Queue()
+
 
     # 비 학습 투자 시뮬레이션 시작  # 기관
-    policy_learner = PolicyLearnerCustom(
+    policy_learner_ant = PolicyLearnerAnt(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
         min_trading_unit=1, max_trading_unit=80)
-    policy_learner.trade(balance=1000000000,  # 십억
-                         model_path=os.path.join(
-                             settings.BASE_DIR,
-                             'models/{}/model_{}.h5'.format(stock_code, model_ver)))
+    PolicyLearnerInstitude = PolicyLearnerAnt(
+        stock_code=stock_code, chart_data=chart_data, training_data=training_data,
+        min_trading_unit=1, max_trading_unit=80)
+
+    environment = Environment(chart_data)  # 환경 객체
+
+    process_one = Process(target=environment, args=(q, stock_code, chart_data, training_data, 1, 80 ))
+    process_two = Process(target=environment, args=(q, ))
+    process_three = Process(target=environment, args=(q, ))
+
+    process_one.start()
+    process_two.start()
+
+    policy_learner_ant.trade(balance=1000000000,  # 십억
+                             model_path=os.path.join(
+                                 settings.BASE_DIR,
+                                 'models/{}/model_{}.h5'.format(stock_code, model_ver)))
+
+    q.close()
+    q.join_thread()
+
+    process_one.join()
+    process_two.join()
+
 
 finish_time = datetime.datetime.now()
 print("start   : ", init_time.strftime("%Y-%m-%d-%Hh-%Mm"))
 print("finish  : ", finish_time.strftime("%Y-%m-%d-%Hh-%Mm"))
 print("Total Running Time : {}".format(finish_time - init_time))
+"""
+# 강화학습 시작 # 개미.
+policy_learner = PolicyLearnerCustom(
+    stock_code=stock_code, chart_data=chart_data, training_data=training_data,
+    min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.2, lr=.001)
+policy_learner.fit(balance=10000000, num_epoches=10,
+                   discount_factor=0, start_epsilon=.5)
+"""

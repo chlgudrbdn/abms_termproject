@@ -1,13 +1,13 @@
 from multiprocessing import Process, Queue
 sentinel = -1
 
-
-def creator(data, q):
+def creator(data, q, d):
     """ Creates data to be consumed and waits for the consumer to finish processing """
     print('Creating data and putting it on the queue')
     for item in data:
         q.put(item)
-
+        d += 1
+        print(d)
 
 def my_consumer(q):
     while True:

@@ -6,6 +6,7 @@ class Environment:
         self.chart_data = chart_data  # 모듈 자체가 차트 데이터를 관리(과거의 것만)
         self.observation = None  # 현재 관측치(시가 종가 거래량 등등)
         self.idx = -1  # 차트 데이터에서의 현재 위치.(최초니까 -1부터 해서 +1한 뒤 0으로 시작해 observe를 어딘가에서 루프 돌리는 것 같다.)
+        self.stock_remain = 100
         self.demand = 0
         self.supply = 0
 
