@@ -6,7 +6,7 @@ class Agent:
     STATE_DIM = 2  # 주식 보유 비율, 포트폴리오 가치 비율
 
     # 매매 수수료 및 세금
-    TRADING_CHARGE = 0.00015  # 매수 또는 매도 수수료 0.015%
+    TRADING_CHARGE = 0.0  # 매수 또는 매도를 자기들이 스스로 하므로.
     TRADING_TAX = 0.003  # 거래세 0.3%
 
     # 행동
@@ -91,10 +91,6 @@ class Agent:
             if self.num_stocks <= 0:
                 validity = False
         return validity
-
-    def check_ready_stock(self, trading_unit, action):
-        self.environment.stock_matching(trading_unit, action, self)
-
 
     def decide_trading_unit(self, confidence):
         if np.isnan(confidence):

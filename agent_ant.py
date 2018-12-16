@@ -75,7 +75,7 @@ class Agent:
         else:
             exploration = False
             probs = policy_network.predict(sample)  # 각 행동에 대한 확률
-            action = np.argmax(probs) if np.max(probs) > 0.01 else Agent.ACTION_HOLD  # 개미가 기관과 외국인 보다 다른 지점.
+            action = np.argmax(probs) if np.max(probs) > 0.0001 else Agent.ACTION_HOLD  # 개미가 기관과 외국인 보다 다른 지점.
             confidence = probs[action] if action != Agent.ACTION_HOLD else 0.5  # holding일 경우가 문제라서, holding일 경우는 그냥 confidence 적당히 0.5정도로 넣음.
         return action, confidence, exploration
 
@@ -91,10 +91,6 @@ class Agent:
             if self.num_stocks <= 0:
                 validity = False
         return validity
-
-    def check_ready_stock(self, trading_unit, action):
-        self.environment.stock_matching(trading_unit, action, self)
-
 
     def decide_trading_unit(self, confidence):
         if np.isnan(confidence):
@@ -153,7 +149,7 @@ class Agent:
         # 홀딩
         elif action == Agent.ACTION_HOLD:
             self.num_hold += 1  # 홀딩 횟수 증가
-            self.immediate_reward = 0
+            self.immediate_reward = -1  # 개미는 급전이 필요
 
         # 포트폴리오 가치 갱신
         self.portfolio_value = self.balance + curr_price * self.num_stocks
@@ -161,11 +157,11 @@ class Agent:
 
         # 지연 보상 판단
         if profitloss > self.delayed_reward_threshold:
-            delayed_reward = 1
+            delayed_reward = 3
             # 목표 수익률 달성하여 기준 포트폴리오 가치 갱신
             self.base_portfolio_value = self.portfolio_value
         elif profitloss < -self.delayed_reward_threshold:
-            delayed_reward = -1  # 에이전트마다 조금씩 다르게.
+            delayed_reward = -3  # 에이전트마다 조금씩 다르게.
             # 손실 기준치를 초과하여 기준 포트폴리오 가치 갱신
             self.base_portfolio_value = self.portfolio_value
         else:

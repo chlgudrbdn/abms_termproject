@@ -1,30 +1,23 @@
 import logging
 import os
 import settings
-import data_manager
-from policy_learner_custom import PolicyLearnerCustom
-from policy_learner import PolicyLearner
-import datetime
+import data_manager as data_manager
+from policy_learner_ant import PolicyLearner
 
-init_time = datetime.datetime.now()
 
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
-    # stock_code = '005490'  # 포스코
-    model_ver = '20181207212159'
 
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
     timestr = settings.get_time_str()
-    if not os.path.exists('logs/%s' % stock_code):
-        os.makedirs('logs/%s' % stock_code)
     file_handler = logging.FileHandler(filename=os.path.join(
         log_dir, "%s_%s.log" % (stock_code, timestr)), encoding='utf-8')
     stream_handler = logging.StreamHandler()
     file_handler.setLevel(logging.DEBUG)
     stream_handler.setLevel(logging.INFO)
     logging.basicConfig(format="%(message)s",
-                        handlers=[file_handler, stream_handler], level=logging.DEBUG)
+        handlers=[file_handler, stream_handler], level=logging.DEBUG)
 
     # 주식 데이터 준비
     chart_data = data_manager.load_chart_data(
@@ -54,23 +47,16 @@ if __name__ == '__main__':
     ]
     training_data = training_data[features_training_data]
 
-    # 강화학습 시작 # 개미.
-    policy_learner = PolicyLearnerCustom(
-        stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.2, lr=.001)
-    policy_learner.fit(balance=10000000, num_epoches=10,
-                       discount_factor=0, start_epsilon=.5)
+    # 강화학습 시작  # 개미
+    policy_learner = PolicyLearner(
+        stock_code=stock_code, chart_data=chart_data, training_data=chart_data[features_chart_data[1:]],
+        min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.05, lr=.001)
+    policy_learner.fit(balance=10000000, num_epoches=100,
+                       discount_factor=0, start_epsilon=.3)
 
-    # 비 학습 투자 시뮬레이션 시작  # 기관
-    policy_learner = PolicyLearnerCustom(
-        stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=80)
-    policy_learner.trade(balance=1000000000,  # 십억
-                         model_path=os.path.join(
-                             settings.BASE_DIR,
-                             'models/{}/model_{}.h5'.format(stock_code, model_ver)))
-
-finish_time = datetime.datetime.now()
-print("start   : ", init_time.strftime("%Y-%m-%d-%Hh-%Mm"))
-print("finish  : ", finish_time.strftime("%Y-%m-%d-%Hh-%Mm"))
-print("Total Running Time : {}".format(finish_time - init_time))
+    # 정책 신경망을 파일로 저장
+    model_dir = os.path.join(settings.BASE_DIR, 'models/%s' % stock_code)
+    if not os.path.isdir(model_dir):
+        os.makedirs(model_dir)
+    model_path = os.path.join(model_dir, 'model_%s.h5' % timestr)
+    policy_learner.policy_network.save_model(model_path)
