@@ -7,8 +7,8 @@ from environment import Environment
 # from agent import Agent
 # from agent_custom import Agent
 from agent_ant import Agent
-# from policy_network_shallow import PolicyNetworkShallow
-from policy_network import PolicyNetwork
+from policy_network_shallow import PolicyNetworkShallow
+# from policy_network import PolicyNetwork
 from visualizer import Visualizer
 
 
@@ -18,12 +18,12 @@ locale.setlocale(locale.LC_ALL, 'ko_KR.UTF-8')
 
 class PolicyLearner:
 
-    def __init__(self, stock_code, chart_data, training_data=None,
+    def __init__(self, stock_code, chart_data, environment, training_data=None,
                  min_trading_unit=1, max_trading_unit=2,
                  delayed_reward_threshold=.05, lr=0.01):
         self.stock_code = stock_code  # 종목코드
         self.chart_data = chart_data
-        self.environment = Environment(chart_data)  # 환경 객체
+        self.environment = environment  # 환경 객체
         # 에이전트 객체
         self.agent = Agent(self.environment,
                            min_trading_unit=min_trading_unit,
@@ -34,7 +34,7 @@ class PolicyLearner:
         self.training_data_idx = -1
         # 정책 신경망; 입력 크기 = 학습 데이터의 크기 + 에이전트 상태 크기
         self.num_features = self.training_data.shape[1] + self.agent.STATE_DIM
-        self.policy_network = PolicyNetwork(
+        self.policy_network = PolicyNetworkShallow(
             input_dim=self.num_features, output_dim=self.agent.NUM_ACTIONS, lr=lr)
         self.visualizer = Visualizer()  # 가시화 모듈
 

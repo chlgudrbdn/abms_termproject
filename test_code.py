@@ -1,37 +1,24 @@
-from multiprocessing import Process, Queue
-sentinel = -1
+from multiprocessing import Process, Lock, Manager
 
-def creator(data, q, d):
-    """ Creates data to be consumed and waits for the consumer to finish processing """
-    print('Creating data and putting it on the queue')
-    for item in data:
-        q.put(item)
-        d += 1
-        print(d)
+"""
+class Worker:
+    def __init__(self):
+        self.cache = Manager().list()
 
-def my_consumer(q):
-    while True:
-        data = q.get()
-        print('data found to be processed: {}'.format(data))
-        processed = data * 2
-        print(processed)
-        if data is sentinel:
-            break
+    def pop_data(self, lock, redis):
+        lock.acquire()
+        while True:
+            item = redis.pop_data()
+from multiprocessing import Process, Lock
+"""
+class ff:
+    def f(l, i):
+        l.acquire()
+        print('hello world', i)
+        l.release()
 
 if __name__ == '__main__':
-    q = Queue()
-    data = [5, 10, 13, -1]
-
-    process_one = Process(target=creator, args=(data, q))
-    process_two = Process(target=my_consumer, args=(q,))
-
-    process_one.start()
-    process_two.start()
-
-    q.close()
-    q.join_thread()
-
-    process_one.join()
-    process_two.join()
-
-# 출처: http://hamait.tistory.com/755 [HAMA 블로그]
+    lock = Lock()
+    ff = ff()
+    for num in range(10):
+        Process(target=ff.f, args=(lock, num)).start()

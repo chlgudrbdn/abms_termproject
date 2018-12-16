@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # 강화학습 시작  # 개미
     policy_learner = PolicyLearner(
         stock_code=stock_code, chart_data=chart_data, training_data=chart_data[features_chart_data[1:]],
-        min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.02, lr=.001)
+        min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.02, lr=.0001)
     policy_learner.fit(balance=10000000, num_epoches=100,
                        discount_factor=0, start_epsilon=.3)
 

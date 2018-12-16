@@ -61,16 +61,17 @@ if __name__ == '__main__':
 
     q = Queue()
 
+    environment = Environment(chart_data)  # singletone 환경 객체
+
 
     # 비 학습 투자 시뮬레이션 시작  # 기관
-    policy_learner_ant = PolicyLearnerAnt(
+    policy_learner_ant = PolicyLearnerAnt(environment,
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
         min_trading_unit=1, max_trading_unit=80)
-    PolicyLearnerInstitude = PolicyLearnerAnt(
+    PolicyLearnerInstitude = PolicyLearnerInstitude(environment,
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
         min_trading_unit=1, max_trading_unit=80)
 
-    environment = Environment(chart_data)  # 환경 객체
 
     process_one = Process(target=environment, args=(q, stock_code, chart_data, training_data, 1, 80 ))
     process_two = Process(target=environment, args=(q, ))
