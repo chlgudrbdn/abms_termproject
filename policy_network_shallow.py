@@ -1,6 +1,6 @@
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Activation, Dropout, CuDNNLSTM, LSTM, Dense, BatchNormalization
+from keras.layers import Activation, Dropout, CuDNNLSTM, LSTM, Dense, BatchNormalization, Flatten
 from keras.optimizers import sgd
 
 
@@ -13,7 +13,7 @@ class PolicyNetworkShallow:
         self.model = Sequential()
 
         self.model.add(CuDNNLSTM(64, input_shape=(1, input_dim),
-                            return_sequences=True, stateful=False))
+                            return_sequences=False, stateful=False))
         self.model.add(Dropout(dropout_rate))
         self.model.add(BatchNormalization())
         self.model.add(Dense(output_dim))
@@ -26,7 +26,7 @@ class PolicyNetworkShallow:
         self.prob = None
 
     def predict(self, sample):
-        self.prob = self.model.predict(np.array(sample).reshape((1, -1, self.input_dim)))[0][0]  # 학습데이터+에이전트상태=17차원 # 2차원으로 바꿔야케라스 입력형식에 맞기 때문.
+        self.prob = self.model.predict(np.array(sample).reshape((1, -1, self.input_dim)))[0]  # 학습데이터+에이전트상태=17차원 # 2차원으로 바꿔야케라스 입력형식에 맞기 때문.
         return self.prob
 
     def train_on_batch(self, x, y):
