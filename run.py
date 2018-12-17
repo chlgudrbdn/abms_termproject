@@ -4,16 +4,16 @@ import settings
 import data_manager
 from policy_learner_ant import PolicyLearner as PolicyLearnerAnt
 from policy_learner_institude import PolicyLearner as PolicyLearnerInstitude
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Lock
 from environment import Environment
 import datetime
+from multiprocessing.connection import Listener
 
 init_time = datetime.datetime.now()
 
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
     # stock_code = '005490'  # 포스코
-    model_ver = '20181207212159'
 
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
@@ -56,40 +56,27 @@ if __name__ == '__main__':
     ]
     training_data = training_data[features_training_data]
 
-
-
-
-    q = Queue()
-
     environment = Environment(chart_data)  # singletone 환경 객체
 
-
     # 비 학습 투자 시뮬레이션 시작  # 기관
-    policy_learner_ant = PolicyLearnerAnt(environment,
-        stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=80)
-    PolicyLearnerInstitude = PolicyLearnerInstitude(environment,
-        stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=80)
+    policy_learner_institude = PolicyLearnerInstitude(stock_code=stock_code, chart_data=chart_data, environment=environment,
+                                                      training_data=training_data,
+                                                      min_trading_unit=1, max_trading_unit=50, delayed_reward_threshold=.05,
+                                                      lr=.001)
+    policy_learner_ant = PolicyLearnerAnt(stock_code=stock_code, chart_data=chart_data, environment=environment,
+                                          training_data=chart_data[features_chart_data[1:]],
+                                          min_trading_unit=1, max_trading_unit=10, delayed_reward_threshold=.02,
+                                          lr=.0001)
 
-
-    process_one = Process(target=environment, args=(q, stock_code, chart_data, training_data, 1, 80 ))
-    process_two = Process(target=environment, args=(q, ))
-    process_three = Process(target=environment, args=(q, ))
-
-    process_one.start()
-    process_two.start()
-
-    policy_learner_ant.trade(balance=1000000000,  # 십억
-                             model_path=os.path.join(
-                                 settings.BASE_DIR,
-                                 'models/{}/model_{}.h5'.format(stock_code, model_ver)))
-
-    q.close()
-    q.join_thread()
-
-    process_one.join()
-    process_two.join()
+    lock = Lock()
+    model_ver = '20181217033712'  # institude 학습
+    model_path=os.path.join(settings.BASE_DIR, 'models/{}/model_{}.h5'.format(stock_code, model_ver))
+    Process(target=policy_learner_institude.trade, args=(1000000000,  # 십억
+                                                         model_path))
+    model_ver = '20181217032705'  # ant 학습
+    model_path=os.path.join(settings.BASE_DIR, 'models/{}/model_{}.h5'.format(stock_code, model_ver))
+    Process(target=policy_learner_ant.trade, args=(10000000,  # 천만
+                                                   model_path))
 
 
 finish_time = datetime.datetime.now()

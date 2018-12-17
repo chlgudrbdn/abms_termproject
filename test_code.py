@@ -2,6 +2,7 @@ from multiprocessing import Process, Lock, Manager, Queue, Pool
 
 import multiprocessing
 import time
+from multiprocessing.connection import Listener
 
 """
 class ff:
@@ -106,8 +107,7 @@ pickle.loads(pickled)()
 pickle.loads(pickled)()
 # <__main__.Thing object at 0x10a6bd940> called 1 times
 """
-
-
+"""
 class Consumer(multiprocessing.Process):
 
     def __init__(self, task_queue, result_queue):
@@ -174,3 +174,49 @@ if __name__ == '__main__':
         result = results.get()
         print('Result:', result)
         num_jobs -= 1
+"""
+"""
+address = ('localhost', 6000)     # family is deduced to be 'AF_INET'
+listener = Listener(address, authkey=b'password')
+conn = listener.accept()
+print('connection accepted from', listener.last_accepted)
+while True:
+    msg = conn.recv()
+    # do something with msg
+    a = msg.split()
+    b = 100
+    if a[0] == 'call':
+        b=b - int(a[1])
+        print("b : ", b)
+        conn.send(b)
+        continue
+    if msg == 'close':
+        conn.close()
+        break
+listener.close()
+"""
+from multiprocessing import Process, Lock
+
+class ff:
+    def f(self, i, l):
+        self.acquire()
+        try:
+            print('hello world', i)
+        finally:
+            print('end')
+            # l.release()
+
+    def d(self):
+        print('d')
+
+def p(lock):
+    for num in range(10):
+        Process(target=ff.f, args=(num, )).start()
+
+if __name__ == '__main__':
+    lock = Lock()
+    # ff = ff()
+    p(lock)
+    # for num in range(10):
+    #     Process(target=ff.f, args=(lock, num)).start()
+        # Process(target=ff.f, args=(lock, self, num)).start()

@@ -217,7 +217,7 @@ class PolicyLearner:
         return x, y
 
     def _build_sample(self):
-        self.environment.observe()
+        # self.environment.observe()
         if len(self.training_data) > self.training_data_idx + 1:
             self.training_data_idx += 1
             self.sample = self.training_data.iloc[self.training_data_idx].tolist()
